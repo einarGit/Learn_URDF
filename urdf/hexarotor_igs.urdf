@@ -72,7 +72,7 @@
       <velocityDrift>0 0 0</velocityDrift>
       <velocityGaussianNoise>0.01 0.01 0.01</velocityGaussianNoise>
     </plugin>
-  </gazebo>
+  </gazebo> add some changes for a change.
   -->
 
    <!-- 
