@@ -1,0 +1,1194 @@
+<?xml version="1.0"?>
+<robot
+  name="drone">
+
+  <gazebo>
+    <plugin name="aero_plugin" filename="libaero_plugin.so">
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="control_plugin" filename="libcontrol_plugin.so">
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="fake_sensor_plugin" filename="libfake_sensor_plugin.so">
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/drone</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="drone_internal_imu_plugin" filename="libhector_gazebo_ros_imu.so" >
+      <alwaysOn>true</alwaysOn>
+      <bodyName>base_link</bodyName>
+      <frameName>base_link</frameName>
+      <topicName>IMU/imu_data</topicName>
+      <serviceName>drone/internal_sensors/imu_service</serviceName>
+      <updateRate>100.0</updateRate>
+      <gaussianNoise>0.001</gaussianNoise>
+      <!-- accelerometer params -->
+      <accelOffset>0.0 0.0 0.0</accelOffset>
+      <accelGaussianNoise>0.0003 0.0003 0.0003</accelGaussianNoise>
+      <accelDrift>0.00004 0.00004 0.00004</accelDrift>
+      <accelFrequency>0.0025 0.0025 0.0025</accelFrequency>
+      <!-- gyroscope params -->
+      <rateOffset>0.0 0.0 0.0</rateOffset>
+      <rateDrift>0.01 0.01 0.01</rateDrift>
+      <rateDriftFrequency>0.001 0.001 0.001</rateDriftFrequency>
+      <rateGaussianNoise>0.01 0.01 0.01</rateGaussianNoise>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="drone_internal_magnetic_sim" filename="libhector_gazebo_ros_magnetic.so">
+      <updateRate>100.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <frameId>base_link</frameId>
+      <topicName>MAGNET/magnetic_data</topicName>
+      <offset>0 0 0</offset>
+      <drift>0.0 0.0 0.0</drift>
+      <gaussianNoise>1.3e-3 1.3e-3 1.3e-3</gaussianNoise>
+    </plugin>
+  </gazebo>
+
+  <!--
+  <gazebo>
+    <plugin name="drone_internal_gps_sim" filename="libhector_gazebo_ros_gps.so">
+      <updateRate>4.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <frameId>base_link</frameId>
+      <topicName>GPS/fix</topicName>
+      <velocityTopicName>GPS/fix_velocity</velocityTopicName>
+      <referenceLatitude>49.860246</referenceLatitude>
+      <referenceLongitude>8.687077</referenceLongitude>
+      <drift>0.0 0.0 0.0</drift>
+      <gaussianNoise>0.01 0.01 0.01</gaussianNoise>
+      <velocityDrift>0 0 0</velocityDrift>
+      <velocityGaussianNoise>0.01 0.01 0.01</velocityGaussianNoise>
+    </plugin>
+  </gazebo>
+  -->
+
+   <!-- 
+  <gazebo reference="base_link">
+    <sensor type="camera" name="camera1">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <vertical_fov>3.1415926</vertical_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>  -->
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. --> <!--
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>base_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+  -->
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="3.9139E-15 8.3664E-15 -0.018301"
+        rpy="0 0 0" />
+      <mass
+        value="4.5104" />
+      <inertia
+        ixx="0.2003"
+        ixy="0.00024017"
+        ixz="-8.2832E-16"
+        iyy="0.074429"
+        iyz="-1.9129E-14"
+        izz="0.20479" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="arm_link_1">
+    <inertial>
+      <origin
+        xyz="7.5838E-05 0.35929 0.00028889"
+        rpy="0 0 0" />
+      <mass
+        value="0.11307" />
+      <inertia
+        ixx="0.0035834"
+        ixy="-1.7536E-06"
+        ixz="3.334E-06"
+        iyy="2.9806E-05"
+        iyz="-6.7287E-06"
+        izz="0.0035963" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_1"
+    type="fixed">
+    <origin
+      xyz="0.037926 -0.021897 0.03"
+      rpy="6.5556E-16 -1.0144E-15 -2.0944" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_1">
+    <inertial>
+      <origin
+        xyz="3.6291E-08 0.019536 -2.0629E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.098041" />
+      <inertia
+        ixx="3.2621E-05"
+        ixy="6.3762E-11"
+        ixz="-3.493E-10"
+        iyy="4.3659E-05"
+        iyz="-3.4958E-10"
+        izz="3.2619E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_1"
+    type="fixed">
+    <origin
+      xyz="0.0011025 0.5623 0.0048775"
+      rpy="1.5712 -0.23736 3.1398" />
+    <parent
+      link="arm_link_1" />
+    <child
+      link="motor_link_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_1">
+    <inertial>
+      <origin
+        xyz="-1.0538E-06 -0.0016268 -3.7168E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.062744" />
+      <inertia
+        ixx="0.0014003"
+        ixy="-1.7517E-10"
+        ixz="2.763E-05"
+        iyy="0.0014072"
+        iyz="-5.9013E-10"
+        izz="8.1065E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_1"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="-2.1319E-15 0.0021799 -2.2359E-18" />
+    <parent
+      link="motor_link_1" />
+    <child
+      link="blade_link_1" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+  <link
+    name="arm_link_2">
+    <inertial>
+      <origin
+        xyz="-6.45987155706053E-05 0.359297517735395 0.000291609283292311"
+        rpy="0 0 0" />
+      <mass
+        value="0.113071616632983" />
+      <inertia
+        ixx="0.00358337872206462"
+        ixy="1.51596305369802E-06"
+        ixz="-3.3319900957408E-06"
+        iyy="2.98059014866111E-05"
+        iyz="-6.78615560568248E-06"
+        izz="0.00359635047022107" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_2"
+    type="fixed">
+    <origin
+      xyz="0.036827 0.021262 0.03"
+      rpy="8.0241E-16 -8.459E-16 -1.0472" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_2">
+    <inertial>
+      <origin
+        xyz="-1.57053931859608E-07 0.0195362446087649 -1.27673377203763E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0980407364233949" />
+      <inertia
+        ixx="3.26190970819821E-05"
+        ixy="-2.69899167422831E-10"
+        ixz="-6.65523939151411E-10"
+        iyy="4.36594955144742E-05"
+        iyz="-2.19396423829946E-10"
+        izz="3.26207140793099E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_2"
+    type="fixed">
+    <origin
+      xyz="-0.001249 0.56231 0.0048421"
+      rpy="1.5704 0.23736 3.1398" />
+    <parent
+      link="arm_link_2" />
+    <child
+      link="motor_link_2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_2">
+    <inertial>
+      <origin
+        xyz="2.5524E-06 -0.0016265 1.4066E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.062743" />
+      <inertia
+        ixx="0.0014001"
+        ixy="4.4118E-10"
+        ixz="3.3633E-05"
+        iyy="0.0014074"
+        iyz="2.0544E-09"
+        izz="8.3687E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_2"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="1.3878E-17 -5.5511E-17 -7.7716E-16" />
+    <parent
+      link="motor_link_2" />
+    <child
+      link="blade_link_2" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+  <link
+    name="arm_link_3">
+    <inertial>
+      <origin
+        xyz="7.5838155291795E-05 0.35929751798952 0.000288890203180497"
+        rpy="0 0 0" />
+      <mass
+        value="0.113071616827671" />
+      <inertia
+        ixx="0.00358337978027546"
+        ixy="-1.7536051706911E-06"
+        ixz="3.33404096432986E-06"
+        iyy="2.98059015235748E-05"
+        iyz="-6.72866419460223E-06"
+        izz="0.00359634942044135" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_3"
+    type="fixed">
+    <origin
+      xyz="0 0.043785 0.03"
+      rpy="8.9162E-17 4.3411E-14 -1.1102E-16" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_3">
+    <inertial>
+      <origin
+        xyz="8.62026303671826E-08 0.0195362442133871 1.85163403387811E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0980407398276978" />
+      <inertia
+        ixx="3.26199309148485E-05"
+        ixy="1.48657027185956E-10"
+        ixz="-1.04171162756658E-09"
+        iyy="4.36595022787714E-05"
+        iyz="3.16273326585913E-10"
+        izz="3.26198875636183E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_3"
+    type="fixed">
+    <origin
+      xyz="0.0011025 0.56231 0.0048775"
+      rpy="1.5708 -0.23736 -3.1416" />
+    <parent
+      link="arm_link_3" />
+    <child
+      link="motor_link_3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_3">
+    <inertial>
+      <origin
+        xyz="-3.3918E-06 -0.0016264 -2.3978E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.062747" />
+      <inertia
+        ixx="0.0014011"
+        ixy="-4.1586E-10"
+        ixz="-6.2654E-06"
+        iyy="0.0014075"
+        iyz="-1.6499E-09"
+        izz="7.585E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_3"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="-1.3878E-17 -1.1102E-16 4.1155E-08" />
+    <parent
+      link="motor_link_3" />
+    <child
+      link="blade_link_3" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+  <link
+    name="arm_link_4">
+    <inertial>
+      <origin
+        xyz="0.000309848428748983 0.359287787025405 0.000481995422359133"
+        rpy="0 0 0" />
+      <mass
+        value="0.113071614536244" />
+      <inertia
+        ixx="0.00358337799003562"
+        ixy="-2.18577034743147E-06"
+        ixz="-3.34022311248574E-06"
+        iyy="2.9814790798697E-05"
+        iyz="-8.67257978822725E-06"
+        izz="0.0035963422444839" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_4"
+    type="fixed">
+    <origin
+      xyz="-0.0379272628526742 0.0218973154176168 0.03"
+      rpy="-0.000529898657228908 2.74334852536435E-07 1.04823974425529" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_4">
+    <inertial>
+      <origin
+        xyz="-3.62905190291057E-08 0.0195362496329407 2.06294589188971E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0980406960173388" />
+      <inertia
+        ixx="3.26209244263571E-05"
+        ixy="-6.37620073400378E-11"
+        ixz="-3.49302598897242E-10"
+        iyy="4.36594174532518E-05"
+        iyz="3.49575062028036E-10"
+        izz="3.26188033140448E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_4"
+    type="fixed">
+    <origin
+      xyz="-0.000662937524737199 0.56229546947751 0.00514004450059716"
+      rpy="1.56982209369664 0.237363119054977 3.13859762470708" />
+    <parent
+      link="arm_link_4" />
+    <child
+      link="motor_link_4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_4">
+    <inertial>
+      <origin
+        xyz="1.113E-06 -0.0016268 5.8709E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.062745" />
+      <inertia
+        ixx="0.0013981"
+        ixy="1.7505E-10"
+        ixz="6.2082E-05"
+        iyy="0.0014073"
+        iyz="1.0574E-09"
+        izz="1.033E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_4"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="2.3091E-15 0.0021575 5.5511E-17" />
+    <parent
+      link="motor_link_4" />
+    <child
+      link="blade_link_4" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+  <link
+    name="arm_link_5">
+    <inertial>
+      <origin
+        xyz="7.58387640751E-05 0.359297512493941 0.000288889903746748"
+        rpy="0 0 0" />
+      <mass
+        value="0.113071612209128" />
+      <inertia
+        ixx="0.00358337969566119"
+        ixy="-1.75361404286477E-06"
+        ixz="3.33404115374709E-06"
+        iyy="2.98059009237569E-05"
+        iyz="-6.72865991392346E-06"
+        izz="0.00359634933545393" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_5"
+    type="fixed">
+    <origin
+      xyz="-0.0368267925361943 -0.0212619585841622 0.0300000000000001"
+      rpy="2.38424860458359E-16 -5.05424148413291E-16 2.09439510239319" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_5" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_5">
+    <inertial>
+      <origin
+        xyz="-1.97997260531491E-07 0.0195362472105891 6.66302262253282E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0980407161578018" />
+      <inertia
+        ixx="3.2619613350915E-05"
+        ixy="-3.36992577576688E-10"
+        ixz="1.04792842556023E-09"
+        iyy="4.36594566063806E-05"
+        iyz="1.11000640600529E-10"
+        izz="3.26201560138299E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_5"
+    type="fixed">
+    <origin
+      xyz="0.001102462209182 0.562306513541 0.00487752564526311"
+      rpy="1.57122537643973 -0.237364397815691 3.13976801289026" />
+    <parent
+      link="arm_link_5" />
+    <child
+      link="motor_link_5" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_5">
+    <inertial>
+      <origin
+        xyz="-2.5274E-06 -0.0016265 -1.407E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.062743" />
+      <inertia
+        ixx="0.0014"
+        ixy="-4.3754E-10"
+        ixz="3.6101E-05"
+        iyy="0.0014074"
+        iyz="-2.0552E-09"
+        izz="8.4923E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_5"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="-6.1062E-15 0.0017735 7.494E-16" />
+    <parent
+      link="motor_link_5" />
+    <child
+      link="blade_link_5" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+  <link
+    name="arm_link_6">
+    <inertial>
+      <origin
+        xyz="-6.4599E-05 0.3593 0.00029161"
+        rpy="0 0 0" />
+      <mass
+        value="0.11307" />
+      <inertia
+        ixx="0.0035834"
+        ixy="1.516E-06"
+        ixz="-3.332E-06"
+        iyy="2.9806E-05"
+        iyz="-6.7862E-06"
+        izz="0.0035964" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/arm_link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint_6"
+    type="fixed">
+    <origin
+      xyz="0 -0.0437852352480966 0.0300000000000001"
+      rpy="9.38614440953606E-16 1.69378355161205E-16 -3.14159265358979" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link_6" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="motor_link_6">
+    <inertial>
+      <origin
+        xyz="-1.5405E-07 0.019536 -1.4274E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.098041" />
+      <inertia
+        ixx="3.2619E-05"
+        ixy="-2.5954E-10"
+        ixz="-7.9538E-10"
+        iyy="4.3659E-05"
+        iyz="-2.4353E-10"
+        izz="3.2621E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/motor_link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_joint_6"
+    type="fixed">
+    <origin
+      xyz="-0.00124895892184055 0.562306513541 0.00484208436052314"
+      rpy="1.57036727715008 0.237364397815704 3.13976801289032" />
+    <parent
+      link="arm_link_6" />
+    <child
+      link="motor_link_6" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="blade_link_6">
+    <inertial>
+      <origin
+        xyz="3.3918E-06 -0.0016264 2.3978E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.062747" />
+      <inertia
+        ixx="0.0014011"
+        ixy="4.1612E-10"
+        ixz="-6.2654E-06"
+        iyy="0.0014075"
+        iyz="1.6503E-09"
+        izz="7.585E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://flypulator_description/meshes/blade_link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="blade_joint_6"
+    type="continuous">
+    <origin
+      xyz="0 0.046 0"
+      rpy="1.0131E-15 0.0017735 2.7756E-17" />
+    <parent
+      link="motor_link_6" />
+    <child
+      link="blade_link_6" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="0"
+      velocity="630" />
+  </joint>
+
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_1">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran5">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran6">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="blade_joint_6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>
